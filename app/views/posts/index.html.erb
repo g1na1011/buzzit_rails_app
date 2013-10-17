@@ -1,0 +1,23 @@
+<h2>Welcome!</h2>
+
+<ul>
+  <% @posts.each do |post| %> 
+    <div class="well">
+      <li>
+        <% post.categories.each do |category| %>
+          <span class="label"><%= link_to category.name, category_path(category) %></span>
+        <% end %>
+        <br/>
+        <%= link_to post.title, post_path(post) %>
+        <% if logged_in? && session[:user_id] == post.user_id %>
+          [<%= link_to 'edit', edit_post_path(post) %>]
+        <% end %>
+        <br/>
+        <%= post.description %>
+        <br/><br/>
+        posted by <%= link_to post.creator.username, user_path(post.creator.id) %> <%= display_datetime(post.created_at) %>
+      </li>
+    </div>
+  <% end %>
+</ul>
+

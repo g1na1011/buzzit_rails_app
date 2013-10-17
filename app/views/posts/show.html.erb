@@ -1,0 +1,23 @@
+<h2><%= @post.title %></h2>
+
+<h4><%= link_to @post.url, fix_url(@post.url) %></h4>
+
+<h4><%= @post.description %></h4>
+<p><%= display_datetime(@post.created_at) %></p>
+
+<%= render 'shared/errors', obj: @comment %>
+
+<% if logged_in? %>
+  <%= form_for [@post, @comment] do |f| %>
+    <%= f.text_area :body %>
+    <br/>
+    <%= f.submit 'Create comment', class: "btn btn-primary" %>
+  <% end %>
+<% end %>  
+
+<h5>Comments:</h5>
+<ul>
+  <% @post.reload.comments.each do |comment| %>
+    <li><%= comment.body %></li>
+  <% end %>
+</ul>
