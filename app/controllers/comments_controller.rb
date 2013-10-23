@@ -1,4 +1,6 @@
 class CommentsController < ApplicationController
+  before_action :require_user, only: [:vote]
+
   def create
     @post = Post.find(params[:post_id])
     @comment = @post.comments.new(comment_params)
@@ -9,6 +11,20 @@ class CommentsController < ApplicationController
       redirect_to post_path(@post)
     else
       render 'posts/show'
+    end
+  end
+
+  def vote
+    post = Post.find(params[:post_id])
+    comment = post.comments.find(params[:id])
+    vote = Vote.new(voteable: comment, creator: current_user, vote: params[:vote])
+
+    if vote.save
+      flash[:notice] = 'Your vote was counted.'
+      redirect_to :back
+    else
+      flash[:error] = "You can't vote twice."
+      redirect_to :back
     end
   end
 

@@ -1,23 +1,47 @@
 <h2>Welcome!</h2>
 
-<ul>
-  <% @posts.each do |post| %> 
-    <div class="well">
-      <li>
-        <% post.categories.each do |category| %>
-          <span class="label"><%= link_to category.name, category_path(category) %></span>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <% @posts.each do |post| %> 
+      <ul>  
+        <% if logged_in? %>
+          <div class="span2 text-center">
+            <div class="well">
+              <li>
+                <%= link_to vote_post_path(post, vote: 'true'), method: 'post', remote: true do %>
+                  <i class="icon-arrow-up"></i>
+                <% end %>
+                <br/>
+                <span id="post_<%= post.id %>_votes" class="text-center"><%= post.total_votes %> votes</span>
+                <br/>
+                <%= link_to vote_post_path(post, vote: 'false'), method: 'post' do %>
+                  <i class="icon-arrow-down"></i>
+                <% end %>
+              </li>
+            </div>
+          </div>
         <% end %>
-        <br/>
-        <%= link_to post.title, post_path(post) %>
-        <% if logged_in? && session[:user_id] == post.user_id %>
-          [<%= link_to 'edit', edit_post_path(post) %>]
-        <% end %>
-        <br/>
-        <%= post.description %>
-        <br/><br/>
-        posted by <%= link_to post.creator.username, user_path(post.creator.id) %> <%= display_datetime(post.created_at) %>
-      </li>
-    </div>
-  <% end %>
-</ul>
-
+        <div class="span10">
+          <div class="well">
+            <li>
+              <% post.categories.each do |category| %>
+                <span class="label">
+                  <%= link_to category.name, category_path(category) %>
+                </span>
+              <% end %>
+              <br/>
+              <%= link_to post.title, post_path(post) %>
+              <% if logged_in? && session[:user_id] == post.user_id %>
+                [<%= link_to 'edit', edit_post_path(post) %>]
+              <% end %>
+              <br/>
+              <%= post.description %>
+              <br/><br/>
+              by <%= link_to post.creator.username, user_path(post.creator.id) %> <%= display_datetime(post.created_at) %>
+            </li>
+          </div>
+        </div>
+      </ul>
+    <% end %>
+  </div>
+</div>

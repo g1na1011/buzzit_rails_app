@@ -16,8 +16,36 @@
 <% end %>  
 
 <h5>Comments:</h5>
-<ul>
+
+<div class="row-fluid">
   <% @post.reload.comments.each do |comment| %>
-    <li><%= comment.body %></li>
+    <ul>
+      <% if logged_in? %>
+        <div class="span2 text-center">
+          <div class="well">
+            <li>
+              <%= link_to vote_post_comment_path(@post, comment, vote: 'true'), method: 'post' do %>
+                <i class="icon-arrow-up"></i>
+              <% end %>
+              <br/>
+              <span class="text-center"><%= comment.total_votes %> votes</span>
+              <br/>
+              <%= link_to vote_post_comment_path(@post, comment, vote: 'false'), method: 'post' do %>
+                <i class="icon-arrow-down"></i>
+              <% end %>
+            </li>
+          </div>
+        </div>
+      <% end %>  
+      <div class="span10">
+        <div class="well">
+          <li>
+            <em>"<%= comment.body %>"</em>
+            <br/><br/>
+            by <%= comment.creator.username %> <%= display_datetime(comment.created_at) %>
+          </li>
+        </div>
+      </div>
+    </ul>
   <% end %>
-</ul>
+</div>
