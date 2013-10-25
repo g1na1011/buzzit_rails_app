@@ -1,10 +1,14 @@
-<h2>Welcome!</h2>
+<h3>Welcome</h3>
 
 <div class="container-fluid">
-  <div class="row-fluid">
+  <div class="row">
     <% @posts.each do |post| %> 
-      <ul>  
-        <% if logged_in? %>
+      <ul>
+        <% if logged_in? %> 
+          <div style="display: none" id="post_<%=post.id%>_vote_error" class="alert alert-error span10">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <li>You can't vote twice.</li>
+          </div>
           <div class="span2 text-center">
             <div class="well">
               <li>
@@ -14,14 +18,14 @@
                 <br/>
                 <span id="post_<%= post.id %>_votes" class="text-center"><%= post.total_votes %> votes</span>
                 <br/>
-                <%= link_to vote_post_path(post, vote: 'false'), method: 'post' do %>
+                <%= link_to vote_post_path(post, vote: 'false'), method: 'post', remote: true do %>
                   <i class="icon-arrow-down"></i>
                 <% end %>
               </li>
             </div>
           </div>
         <% end %>
-        <div class="span10">
+        <div class="span9">
           <div class="well">
             <li>
               <% post.categories.each do |category| %>
@@ -31,13 +35,15 @@
               <% end %>
               <br/>
               <%= link_to post.title, post_path(post) %>
-              <% if logged_in? && session[:user_id] == post.user_id %>
+              <% if logged_in? && current_user.admin? %>
                 [<%= link_to 'edit', edit_post_path(post) %>]
               <% end %>
               <br/>
               <%= post.description %>
               <br/><br/>
-              by <%= link_to post.creator.username, user_path(post.creator.id) %> <%= display_datetime(post.created_at) %>
+              by <%= link_to post.creator.username, user_path(post.creator) %> <%= display_datetime(post.created_at) %>
+              <br/><br/>
+              <%= link_to post.comments.size.to_s + ' comments', post_path(post) %>
             </li>
           </div>
         </div>

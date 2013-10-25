@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :vote]
-  before_action :require_user, except: [:index, :show, :edit]
-  before_action :match_post_user, only: [:edit]
+  before_action :require_user, except: [:index, :show]
+  before_action :require_admin, only: [:edit]
 
   def index
     @posts = Post.all.sort_by { |post| post.total_votes }.reverse
@@ -39,26 +39,18 @@ class PostsController < ApplicationController
     end
   end
 
-  def match_post_user
-    if session[:user_id] != @post.user_id
-      flash[:error] = 'You are not the creator.'
-      redirect_to post_path(@post)
-    end
-  end
-
   def vote
-    vote = Vote.new(voteable: @post, creator: current_user, vote: params[:vote])
+    @vote = Vote.create(voteable: @post, creator: current_user, vote: params[:vote])
 
     respond_to do |format|
-      format.html { 
-        if vote.save
+      format.html do
+        if @vote.valid?
           flash[:notice] = 'Your vote was counted.'
-          redirect_to :back
         else
           flash[:error] = "You can't vote twice."
-          redirect_to :back
         end
-      }
+        redirect_to :back
+      end
       format.js
     end
   end
@@ -71,6 +63,6 @@ class PostsController < ApplicationController
     end
 
     def set_post
-      @post = Post.find(params[:id])
+      @post = Post.find_by(slug: params[:id])
     end
 end

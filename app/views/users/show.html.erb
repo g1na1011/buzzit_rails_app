@@ -1,13 +1,32 @@
 <p style="font-size: 18px">Profile: <%= @user.username %></p>
 
 <ul>
-  <li>Username: <%= @user.username %></li>
-  <li>Posts: 
-    <ul>
-    <% @user.posts.each do |post| %>
-      <li><%= link_to post.title, post_path(post) %></li>
-    <% end %>
-  </ul>
-  </li>
+  <br/>
+  <div class="well">
+    <li><b>Username:</b> <%= @user.username %></li>
+    <li><b>Time Zone:</b> <%= @user.time_zone %></li>
+  </div>
+  <div class="tabbable">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#tab1" data-toggle="tab">Posts (<%= @user.posts.size %>)</a></li>
+      <li><a href="#tab2" data-toggle="tab">Comments (<%= @user.comments.size %>)</a></li>
+    </ul>
+  </div>
+  <div class="tab-content">
+    <div class="tab-pane active" id="tab1">
+      <% @user.posts.each do |post| %>
+        <div class="well well-small">
+          <li><i class="icon-star-empty"></i> <%= link_to post.title, post_path(post) %> <%= display_datetime(post.created_at) %></li>
+        </div>
+      <% end %>
+    </div>
+    <div class="tab-pane" id="tab2">
+      <% @user.comments.each do |comment| %>
+        <div class="well well-small">
+          <li><i class="icon-heart"></i> <%= link_to comment.body, post_path(comment.post) %> <%= display_datetime(comment.created_at) %></li>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </ul>
 

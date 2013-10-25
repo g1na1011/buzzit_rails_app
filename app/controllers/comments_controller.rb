@@ -1,8 +1,8 @@
 class CommentsController < ApplicationController
-  before_action :require_user, only: [:vote]
+  before_action :require_user
 
   def create
-    @post = Post.find(params[:post_id])
+    @post = Post.find_by(slug: params[:post_id])
     @comment = @post.comments.new(comment_params)
     @comment.user_id = session[:user_id]
 
@@ -15,16 +15,20 @@ class CommentsController < ApplicationController
   end
 
   def vote
-    post = Post.find(params[:post_id])
-    comment = post.comments.find(params[:id])
-    vote = Vote.new(voteable: comment, creator: current_user, vote: params[:vote])
+    post = Post.find_by(slug: params[:post_id])
+    @comment = post.comments.find(params[:id])
+    @vote = Vote.create(voteable: @comment, creator: current_user, vote: params[:vote])
 
-    if vote.save
-      flash[:notice] = 'Your vote was counted.'
-      redirect_to :back
-    else
-      flash[:error] = "You can't vote twice."
-      redirect_to :back
+    respond_to do |format|
+      format.html do
+        if @vote.valid?
+          flash[:notice] = 'Your vote was counted.'
+        else
+          flash[:error] = "You can't vote twice."
+        end
+        redirect_to :back
+      end
+      format.js
     end
   end
 

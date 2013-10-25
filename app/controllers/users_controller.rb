@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update]
+  before_action :same_user, only: [:edit, :update]
 
   def index
     @users = User.all
@@ -35,13 +36,20 @@ class UsersController < ApplicationController
     end
   end
 
+  def same_user
+    if current_user.id != @user.id
+      flash[:error] = "You can't do that."
+      redirect_to root_path
+    end
+  end
+
   private
 
   def user_params
-    params.require(:user).permit(:username, :password)
+    params.require(:user).permit(:username, :password, :time_zone)
   end
 
   def set_user
-    @user = User.find(params[:id])
+    @user = User.find_by(slug: params[:id])
   end
 end

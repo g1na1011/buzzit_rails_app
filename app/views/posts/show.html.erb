@@ -1,9 +1,9 @@
-<h2><%= @post.title %></h2>
+<h3><%= @post.title %></h3>
 
 <h4><%= link_to @post.url, fix_url(@post.url) %></h4>
 
 <h4><%= @post.description %></h4>
-<p><%= display_datetime(@post.created_at) %></p>
+<p>by <%= link_to @post.creator.username, user_path(@post.creator.slug) %> <%= display_datetime(@post.created_at) %></p>
 
 <%= render 'shared/errors', obj: @comment %>
 
@@ -17,32 +17,36 @@
 
 <h5>Comments:</h5>
 
-<div class="row-fluid">
+<div class="row">
   <% @post.reload.comments.each do |comment| %>
     <ul>
       <% if logged_in? %>
+        <div style="display: none" id="comment_<%=comment.id%>_vote_error" class="alert alert-error span10">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+          <li>You can't vote twice.</li>
+        </div>
         <div class="span2 text-center">
           <div class="well">
             <li>
-              <%= link_to vote_post_comment_path(@post, comment, vote: 'true'), method: 'post' do %>
+              <%= link_to vote_post_comment_path(@post, comment, vote: 'true'), method: 'post', remote: true do %>
                 <i class="icon-arrow-up"></i>
               <% end %>
               <br/>
-              <span class="text-center"><%= comment.total_votes %> votes</span>
+              <span class="text-center" id="comment_<%= comment.id %>_votes"><%= comment.total_votes %> votes</span>
               <br/>
-              <%= link_to vote_post_comment_path(@post, comment, vote: 'false'), method: 'post' do %>
+              <%= link_to vote_post_comment_path(@post, comment, vote: 'false'), method: 'post', remote: true do %>
                 <i class="icon-arrow-down"></i>
               <% end %>
             </li>
           </div>
         </div>
       <% end %>  
-      <div class="span10">
+      <div class="span9">
         <div class="well">
           <li>
             <em>"<%= comment.body %>"</em>
             <br/><br/>
-            by <%= comment.creator.username %> <%= display_datetime(comment.created_at) %>
+            by <%= link_to comment.creator.username, user_path(comment.creator) %> <%= display_datetime(comment.created_at) %>
           </li>
         </div>
       </div>
