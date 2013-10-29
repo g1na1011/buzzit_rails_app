@@ -5,7 +5,7 @@
     <% @posts.each do |post| %> 
       <ul>
         <% if logged_in? %> 
-          <div style="display: none" id="post_<%=post.id%>_vote_error" class="alert alert-error span10">
+          <div style="display: none" id="post_<%= post.to_param %>_vote_error" class="alert alert-error span10">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <li>You can't vote twice.</li>
           </div>
@@ -16,7 +16,7 @@
                   <i class="icon-arrow-up"></i>
                 <% end %>
                 <br/>
-                <span id="post_<%= post.id %>_votes" class="text-center"><%= post.total_votes %> votes</span>
+                <span id="post_<%= post.to_param %>_votes" class="text-center"><%= post.total_votes %> votes</span>
                 <br/>
                 <%= link_to vote_post_path(post, vote: 'false'), method: 'post', remote: true do %>
                   <i class="icon-arrow-down"></i>
